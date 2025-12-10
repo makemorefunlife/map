@@ -12,7 +12,7 @@
 const REQUIRED_ENV_VARS = {
   // 한국관광공사 API
   NEXT_PUBLIC_TOUR_API_KEY: "한국관광공사 API 키 (클라이언트)",
-  TOUR_API_KEY: "한국관광공사 API 키 (서버)",
+  // TOUR_API_KEY는 선택 사항 (없으면 NEXT_PUBLIC_TOUR_API_KEY 사용)
   // 네이버 지도
   NEXT_PUBLIC_NAVER_MAP_CLIENT_ID: "네이버 지도 클라이언트 ID",
   // Clerk (기존)
@@ -79,9 +79,16 @@ export function getTourApiKey(): string {
 
 /**
  * 한국관광공사 API 키 가져오기 (서버)
+ * TOUR_API_KEY가 없으면 NEXT_PUBLIC_TOUR_API_KEY를 fallback으로 사용
  */
 export function getTourApiKeyServer(): string {
-  return getEnv("TOUR_API_KEY");
+  // 서버 전용 키가 있으면 사용
+  const serverKey = process.env.TOUR_API_KEY;
+  if (serverKey) {
+    return serverKey;
+  }
+  // 없으면 클라이언트 키 사용 (공공 API이므로 허용)
+  return getEnv("NEXT_PUBLIC_TOUR_API_KEY");
 }
 
 /**

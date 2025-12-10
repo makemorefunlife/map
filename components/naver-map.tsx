@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { convertKATECToWGS84 } from "@/lib/api/tour-api";
 import type { TourItem } from "@/lib/types/tour";
 
@@ -33,10 +33,17 @@ export function NaverMap({
   initialZoom = 7,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<any>(null);
-  const [markers, setMarkers] = useState<any[]>([]);
-  const [infoWindows, setInfoWindows] = useState<any[]>([]);
+  const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const infoWindowsRef = useRef<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  // initialCenter와 initialZoom을 메모이제이션하여 불필요한 재렌더링 방지
+  const memoizedCenter = useMemo(
+    () => initialCenter,
+    [initialCenter.lat, initialCenter.lng]
+  );
+  const memoizedZoom = useMemo(() => initialZoom, [initialZoom]);
 
   // 네이버 지도 스크립트 로드
   useEffect(() => {
@@ -67,25 +74,26 @@ export function NaverMap({
     };
   }, []);
 
-  // 지도 초기화
+  // 지도 초기화 (한 번만 실행)
   useEffect(() => {
-    if (!isLoaded || !mapRef.current || !window.naver) return;
+    if (!isLoaded || !mapRef.current || !window.naver || mapInstanceRef.current) return;
 
     const mapInstance = new window.naver.maps.Map(mapRef.current, {
-      center: new window.naver.maps.LatLng(initialCenter.lat, initialCenter.lng),
-      zoom: initialZoom,
+      center: new window.naver.maps.LatLng(memoizedCenter.lat, memoizedCenter.lng),
+      zoom: memoizedZoom,
     });
 
-    setMap(mapInstance);
-  }, [isLoaded, initialCenter, initialZoom]);
+    mapInstanceRef.current = mapInstance;
+  }, [isLoaded, memoizedCenter, memoizedZoom]);
 
   // 마커 생성 및 업데이트
   useEffect(() => {
+    const map = mapInstanceRef.current;
     if (!map || !window.naver || tours.length === 0) return;
 
     // 기존 마커 및 인포윈도우 제거
-    markers.forEach((marker) => marker.setMap(null));
-    infoWindows.forEach((infoWindow) => infoWindow.close());
+    markersRef.current.forEach((marker) => marker.setMap(null));
+    infoWindowsRef.current.forEach((infoWindow) => infoWindow.close());
 
     const newMarkers: any[] = [];
     const newInfoWindows: any[] = [];
@@ -136,18 +144,18 @@ export function NaverMap({
       newInfoWindows.push(infoWindow);
     });
 
-    setMarkers(newMarkers);
-    setInfoWindows(newInfoWindows);
+    markersRef.current = newMarkers;
+    infoWindowsRef.current = newInfoWindows;
 
     // 모든 마커가 보이도록 지도 범위 조정
-    if (newMarkers.length > 0) {
+    if (newMarkers.length > 0 && !selectedTourId) {
       const bounds = new window.naver.maps.LatLngBounds();
       newMarkers.forEach((marker) => {
         bounds.extend(marker.getPosition());
       });
       map.fitBounds(bounds);
     }
-  }, [map, tours, selectedTourId, onMarkerClick]);
+  }, [tours, selectedTourId, onMarkerClick]);
 
   return (
     <div className="w-full h-full min-h-[400px] lg:min-h-[600px] rounded-lg overflow-hidden border">

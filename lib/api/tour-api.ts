@@ -86,10 +86,56 @@ async function fetchWithRetry<T>(
 
       const data = await response.json();
 
+      // 개발 환경에서 응답 로그 출력
+      if (process.env.NODE_ENV === "development") {
+        console.log("[API] 응답:", {
+          url,
+          resultCode: data.response?.header?.resultCode,
+          resultMsg: data.response?.header?.resultMsg,
+          hasData: !!data.response?.body?.items,
+          responseKeys: Object.keys(data),
+        });
+      }
+
+      // 응답 구조가 없는 경우 (에러 응답일 수 있음)
+      if (!data.response) {
+        // 개발 환경에서 상세 로그 출력
+        if (process.env.NODE_ENV === "development") {
+          console.error("[API] 응답 구조 오류:", {
+            fullResponse: JSON.stringify(data, null, 2),
+            responseType: typeof data,
+            dataKeys: Object.keys(data),
+          });
+        }
+        
+        // 에러 메시지 추출 시도
+        const errorMsg = data.message || data.error || data.msg || "API 응답 형식이 올바르지 않습니다.";
+        throw new Error(`API 오류: ${errorMsg}`);
+      }
+
       // API 응답 에러 체크
-      if (data.response?.header?.resultCode !== "0000") {
+      const resultCode = data.response?.header?.resultCode;
+      if (resultCode && resultCode !== "0000") {
         const resultMsg = data.response?.header?.resultMsg || "알 수 없는 오류";
-        throw new Error(`API 오류: ${resultMsg}`);
+        
+        // 개발 환경에서 상세 로그 출력
+        if (process.env.NODE_ENV === "development") {
+          console.error("[API] 에러 응답:", {
+            resultCode,
+            resultMsg,
+            fullResponse: JSON.stringify(data, null, 2),
+          });
+        }
+        
+        // 일반적인 에러 코드 처리
+        if (resultCode === "ERROR-300" || resultMsg.includes("인증") || resultMsg.includes("SERVICE_KEY")) {
+          throw new Error("API 인증 오류: API 키를 확인해주세요. .env.local 파일에 NEXT_PUBLIC_TOUR_API_KEY를 설정해주세요.");
+        }
+        if (resultCode === "ERROR-500" || resultMsg.includes("서버")) {
+          throw new Error("API 서버 오류: 잠시 후 다시 시도해주세요.");
+        }
+        
+        throw new Error(`API 오류 (${resultCode}): ${resultMsg}`);
       }
 
       return data as T;

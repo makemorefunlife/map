@@ -114,9 +114,13 @@ async function TourListData({
     );
   } catch (error) {
     console.error("Error fetching tours:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "관광지 목록을 불러오는 중 오류가 발생했습니다.";
     return (
       <Error
-        message="관광지 목록을 불러오는 중 오류가 발생했습니다."
+        message={errorMessage}
         onRetry={() => window.location.reload()}
       />
     );
