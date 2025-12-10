@@ -66,12 +66,14 @@ export function TourSearch({
           onKeyDown={handleKeyDown}
           className="pl-10"
           disabled={isLoading}
+          aria-label="관광지 검색 입력"
         />
       </div>
       <Button
         onClick={handleSearch}
         disabled={isLoading}
         className="shrink-0"
+        aria-label="검색 실행"
       >
         {isLoading ? (
           <>

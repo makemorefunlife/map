@@ -81,6 +81,12 @@ export function NaverMap({
     const mapInstance = new window.naver.maps.Map(mapRef.current, {
       center: new window.naver.maps.LatLng(memoizedCenter.lat, memoizedCenter.lng),
       zoom: memoizedZoom,
+      minZoom: 6,
+      maxZoom: 18,
+      zoomControl: true, // 줌 컨트롤 활성화
+      zoomControlOptions: {
+        position: window.naver.maps.Position.TOP_RIGHT,
+      },
     });
 
     mapInstanceRef.current = mapInstance;

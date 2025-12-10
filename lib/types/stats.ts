@@ -30,6 +30,6 @@ export interface StatsSummary {
   totalCount: number; // 전체 관광지 수
   topRegions: RegionStats[]; // 상위 지역 (최대 3개)
   topTypes: TypeStats[]; // 상위 타입 (최대 3개)
-  lastUpdated: Date; // 마지막 업데이트 시간
+  lastUpdated: string; // 마지막 업데이트 시간 (ISO string)
 }
 

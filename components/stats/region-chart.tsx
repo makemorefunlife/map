@@ -72,11 +72,17 @@ export function RegionChart({ data, isLoading }: RegionChartProps) {
           상위 10개 지역의 관광지 개수
         </p>
       </div>
-      <ChartContainer config={chartConfig} className="h-[400px] w-full">
+      <ChartContainer
+        config={chartConfig}
+        className="h-[400px] w-full"
+        aria-label="지역별 관광지 분포 차트"
+      >
         <BarChart
           data={displayData}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
           onClick={handleBarClick}
+          role="img"
+          aria-label="지역별 관광지 개수 막대 그래프"
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -85,8 +91,12 @@ export function RegionChart({ data, isLoading }: RegionChartProps) {
             textAnchor="end"
             height={100}
             tick={{ fontSize: 12 }}
+            aria-label="지역명"
           />
-          <YAxis tick={{ fontSize: 12 }} />
+          <YAxis
+            tick={{ fontSize: 12 }}
+            aria-label="관광지 개수"
+          />
           <ChartTooltip
             content={<ChartTooltipContent />}
             cursor={{ fill: "hsl(var(--muted))", opacity: 0.2 }}

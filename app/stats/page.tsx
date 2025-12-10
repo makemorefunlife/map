@@ -17,6 +17,9 @@ import {
   getTypeStats,
 } from "@/lib/api/stats-api";
 
+// 통계 데이터 캐싱 설정 (1시간)
+export const revalidate = 3600;
+
 async function StatsData() {
   try {
     // 병렬로 모든 통계 데이터 수집

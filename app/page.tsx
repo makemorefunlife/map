@@ -13,6 +13,9 @@ import { getAreaCode, getAreaBasedList, searchKeyword } from "@/lib/api/tour-api
 import type { TourItem, ContentTypeId } from "@/lib/types/tour";
 import { Error } from "@/components/ui/error";
 
+// 홈페이지 데이터 캐싱 설정 (5분)
+export const revalidate = 300;
+
 interface HomePageProps {
   searchParams: Promise<{
     areaCode?: string;
@@ -112,11 +115,13 @@ async function TourListData({
         pageSize={numOfRows}
       />
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching tours:", error);
     const errorMessage =
       error instanceof Error
         ? error.message
+        : typeof error === "object" && error !== null && "message" in error
+        ? String((error as { message: unknown }).message)
         : "관광지 목록을 불러오는 중 오류가 발생했습니다.";
     return (
       <Error

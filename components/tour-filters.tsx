@@ -79,13 +79,15 @@ export function TourFilters({
     <div className="space-y-4">
       {/* 지역 필터 */}
       <div>
-        <label className="text-sm font-medium mb-2 block">지역</label>
+        <label htmlFor="area-filter" className="text-sm font-medium mb-2 block">
+          지역
+        </label>
         <Select
           value={currentAreaCode}
           onValueChange={(value) => updateFilter("areaCode", value)}
           disabled={isLoadingAreaCodes}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger id="area-filter" className="w-full" aria-label="지역 선택">
             <SelectValue placeholder="지역 선택" />
           </SelectTrigger>
           <SelectContent>
@@ -101,8 +103,14 @@ export function TourFilters({
 
       {/* 관광 타입 필터 */}
       <div>
-        <label className="text-sm font-medium mb-2 block">관광 타입</label>
-        <div className="flex flex-wrap gap-2">
+        <label className="text-sm font-medium mb-2 block" id="type-filter-label">
+          관광 타입
+        </label>
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-labelledby="type-filter-label"
+        >
           <Button
             variant={currentContentTypeIds.length === 0 ? "default" : "outline"}
             size="sm"
@@ -112,6 +120,7 @@ export function TourFilters({
               params.set("page", "1");
               router.push(`/?${params.toString()}`);
             }}
+            aria-pressed={currentContentTypeIds.length === 0}
           >
             전체
           </Button>
@@ -124,6 +133,8 @@ export function TourFilters({
                 variant={isSelected ? "default" : "outline"}
                 size="sm"
                 onClick={() => toggleContentType(typeId)}
+                aria-pressed={isSelected}
+                aria-label={`${name} 필터 ${isSelected ? "선택됨" : "선택 안됨"}`}
               >
                 {name}
               </Button>
@@ -134,12 +145,14 @@ export function TourFilters({
 
       {/* 정렬 옵션 */}
       <div>
-        <label className="text-sm font-medium mb-2 block">정렬</label>
+        <label htmlFor="sort-filter" className="text-sm font-medium mb-2 block">
+          정렬
+        </label>
         <Select
           value={currentSort}
           onValueChange={(value) => updateFilter("sort", value)}
         >
-          <SelectTrigger className="w-full">
+          <SelectTrigger id="sort-filter" className="w-full" aria-label="정렬 기준 선택">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

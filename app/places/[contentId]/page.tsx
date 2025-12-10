@@ -26,7 +26,11 @@ import { DetailMap } from "@/components/tour-detail/detail-map";
 import { DetailPetTour } from "@/components/tour-detail/detail-pet-tour";
 import { ShareButton } from "@/components/tour-detail/share-button";
 import { BookmarkButton } from "@/components/bookmarks/bookmark-button";
+import { RecommendedTours } from "@/components/tour-detail/recommended-tours";
 import type { Metadata } from "next";
+
+// 상세페이지 데이터 캐싱 설정 (10분)
+export const revalidate = 600;
 
 interface PlacePageProps {
   params: Promise<{ contentId: string }>;
@@ -161,6 +165,13 @@ async function TourDetailData({ contentId }: { contentId: string }) {
 
         {/* 반려동물 정보 섹션 */}
         {petInfo && <DetailPetTour petInfo={petInfo} />}
+
+        {/* 추천 관광지 섹션 */}
+        <RecommendedTours
+          currentContentId={contentId}
+          areaCode={detail.areacode}
+          contentTypeId={contentTypeId}
+        />
       </div>
     );
   } catch (error) {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const Navbar = () => {
   return (
@@ -37,6 +38,7 @@ const Navbar = () => {
           </nav>
         </div>
         <div className="flex gap-4 items-center">
+          <ThemeToggle />
           <SignedOut>
             <SignInButton mode="modal">
               <Button variant="default" size="sm">

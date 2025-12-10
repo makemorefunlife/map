@@ -130,9 +130,9 @@
     - [x] 리스트 항목 클릭 → 지도 이동 및 마커 강조
     - [x] 리스트 항목 호버 → 마커 강조 (선택 사항)
     - [x] 마커 클릭 → 리스트 항목 강조
-  - [ ] 지도 컨트롤
-    - [ ] 줌 인/아웃 버튼 (네이버 지도 기본 컨트롤 사용)
-    - [ ] 지도 유형 선택 (일반/스카이뷰)
+  - [x] 지도 컨트롤
+    - [x] 줌 인/아웃 버튼 (네이버 지도 기본 컨트롤 사용 - zoomControl: true)
+    - [ ] 지도 유형 선택 (일반/스카이뷰) - 선택 사항 (네이버 지도 기본 제공)
     - [ ] 현재 위치 버튼 (선택 사항)
   - [x] 반응형 레이아웃
     - [x] 데스크톱: 리스트(좌측 50%) + 지도(우측 50%) 분할
@@ -238,14 +238,14 @@
     - [x] 반려동물 전용 시설 정보
     - [x] 아이콘 및 뱃지 디자인 (🐾)
     - [x] 주의사항 강조 표시
-- [ ] 추천 관광지 섹션 (선택 사항)
-  - [ ] 같은 지역 또는 타입의 다른 관광지 추천
-  - [ ] 카드 형태로 표시
+- [x] 추천 관광지 섹션 (선택 사항)
+  - [x] 같은 지역 또는 타입의 다른 관광지 추천
+  - [x] 카드 형태로 표시
 - [x] 최종 통합 및 스타일링
   - [x] 모든 섹션 통합
   - [x] 반응형 디자인 확인
   - [x] 모바일 최적화
-  - [ ] 접근성 확인 (ARIA 라벨, 키보드 네비게이션)
+  - [x] 접근성 확인 (ARIA 라벨, 키보드 네비게이션)
 
 ## Phase 4: 통계 대시보드 페이지 (`/stats`)
 
@@ -290,7 +290,7 @@
     - [x] 다크/라이트 모드 지원
     - [x] 반응형 디자인
     - [x] 로딩 상태
-    - [ ] 접근성 (ARIA 라벨, 키보드 네비게이션)
+    - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
 - [x] 타입별 분포 차트 (Donut Chart)
   - [x] `components/stats/type-chart.tsx` 생성
     - [x] shadcn/ui Chart 컴포넌트 설치 (Pie/Donut)
@@ -302,7 +302,7 @@
     - [x] 다크/라이트 모드 지원
     - [x] 반응형 디자인
     - [x] 로딩 상태
-    - [ ] 접근성 (ARIA 라벨)
+    - [x] 접근성 (ARIA 라벨)
 - [x] 페이지 통합
   - [x] `app/stats/page.tsx`에 모든 컴포넌트 통합
     - [x] 통계 요약 카드 (상단)
@@ -314,92 +314,99 @@
 
 ## Phase 5: 북마크 페이지 (`/bookmarks`) - 선택 사항
 
-- [ ] Supabase 설정 확인
-  - [ ] `bookmarks` 테이블 확인 (db.sql 참고)
-    - [ ] `users` 테이블과의 관계 확인
-    - [ ] 인덱스 확인 (user_id, content_id, created_at)
-    - [ ] RLS 비활성화 확인 (개발 환경)
-- [ ] 북마크 목록 페이지
-  - [ ] `app/bookmarks/page.tsx` 생성
-    - [ ] 인증된 사용자만 접근 가능
-    - [ ] 로그인하지 않은 경우 로그인 유도
-  - [ ] `components/bookmarks/bookmark-list.tsx` 생성
-    - [ ] 사용자 북마크 목록 조회 (`getUserBookmarks()`)
-    - [ ] 카드 레이아웃 (홈페이지와 동일한 tour-card 사용)
-    - [ ] 빈 상태 처리 (북마크 없을 때)
-    - [ ] 로딩 상태 (Skeleton UI)
-- [ ] 북마크 관리 기능
-  - [ ] 정렬 옵션
-    - [ ] 최신순 (created_at DESC)
-    - [ ] 이름순 (가나다순)
-    - [ ] 지역별
-  - [ ] 일괄 삭제 기능
-    - [ ] 체크박스 선택
-    - [ ] 선택 항목 삭제
-    - [ ] 확인 다이얼로그
-  - [ ] 개별 삭제 기능
-    - [ ] 각 카드에 삭제 버튼
-- [ ] 페이지 통합 및 스타일링
-  - [ ] 반응형 디자인 확인
-  - [ ] 최종 페이지 확인
+- [x] Supabase 설정 확인
+  - [x] `bookmarks` 테이블 확인 (db.sql 참고)
+    - [x] `users` 테이블과의 관계 확인
+    - [x] 인덱스 확인 (user_id, content_id, created_at)
+    - [x] RLS 비활성화 확인 (개발 환경)
+- [x] 북마크 목록 페이지
+  - [x] `app/bookmarks/page.tsx` 생성
+    - [x] 인증된 사용자만 접근 가능
+    - [x] 로그인하지 않은 경우 홈으로 리다이렉트
+  - [x] `components/bookmarks/bookmark-list.tsx` 생성
+    - [x] 사용자 북마크 목록 조회 (Supabase 직접 조회)
+    - [x] 관광지 상세 정보 조회 (getDetailCommon API)
+    - [x] 카드 레이아웃 (북마크 전용 bookmark-card 사용)
+    - [x] 빈 상태 처리 (북마크 없을 때)
+    - [x] 로딩 상태 (Skeleton UI)
+- [x] 북마크 관리 기능
+  - [x] 정렬 옵션
+    - [x] 최신순 (created_at DESC)
+    - [x] 이름순 (가나다순)
+    - [x] 지역별
+  - [x] 일괄 삭제 기능
+    - [x] 체크박스 선택
+    - [x] 전체 선택/해제
+    - [x] 선택 항목 삭제
+    - [x] 확인 다이얼로그
+  - [x] 개별 삭제 기능
+    - [x] 각 카드에 삭제 버튼 (호버 시 표시)
+- [x] 북마크 전용 카드 컴포넌트
+  - [x] `components/bookmarks/bookmark-card.tsx` 생성
+    - [x] 체크박스 표시
+    - [x] 삭제 버튼 (호버 시 표시)
+    - [x] 관광지 카드 레이아웃
+- [x] 페이지 통합 및 스타일링
+  - [x] 반응형 디자인 확인
+  - [x] 최종 페이지 확인
 
 ## Phase 6: 최적화 & 배포
 
-- [ ] 이미지 최적화
+- [x] 이미지 최적화
   - [x] `next.config.ts` 외부 도메인 설정
     - [x] 한국관광공사 이미지 도메인 추가
-    - [ ] 네이버 지도 이미지 도메인 추가
-  - [ ] Next.js Image 컴포넌트 사용 확인
-    - [ ] priority 속성 (above-the-fold)
-    - [ ] lazy loading (below-the-fold)
-    - [ ] responsive sizes 설정
-- [ ] 전역 에러 핸들링
-  - [ ] `app/error.tsx` 생성
-  - [ ] `app/global-error.tsx` 생성
-  - [ ] API 에러 처리 개선
-- [ ] 404 페이지
-  - [ ] `app/not-found.tsx` 생성
-    - [ ] 사용자 친화적인 메시지
-    - [ ] 홈으로 돌아가기 버튼
-- [ ] SEO 최적화
+    - [x] 네이버 지도 이미지 도메인 추가 (필요 시)
+  - [x] Next.js Image 컴포넌트 사용 확인
+    - [x] priority 속성 (상세페이지 대표 이미지에 적용)
+    - [x] lazy loading (목록 페이지에 적용)
+    - [x] responsive sizes 설정
+- [x] 전역 에러 핸들링
+  - [x] `app/error.tsx` 생성
+  - [x] `app/global-error.tsx` 생성
+  - [x] API 에러 처리 개선 (이미 구현됨)
+- [x] 404 페이지
+  - [x] `app/not-found.tsx` 생성
+    - [x] 사용자 친화적인 메시지
+    - [x] 홈으로 돌아가기 버튼
+- [x] SEO 최적화
   - [x] 메타태그 설정 (`app/layout.tsx`)
     - [x] 기본 title, description
     - [x] Open Graph 태그
     - [x] Twitter Card 태그
-  - [ ] `app/sitemap.ts` 생성
-    - [ ] 동적 sitemap 생성 (관광지 상세페이지 포함)
-  - [ ] `app/robots.ts` 생성
-- [ ] 성능 최적화
-  - [ ] Lighthouse 점수 측정 (목표: > 80)
-  - [ ] 코드 분할 확인
-  - [ ] 불필요한 번들 제거
-  - [ ] API 응답 캐싱 전략 확인
-- [ ] 환경변수 보안 검증
+  - [x] `app/sitemap.ts` 생성
+    - [x] 동적 sitemap 생성 (관광지 상세페이지 포함)
+  - [x] `app/robots.ts` 생성
+- [x] 성능 최적화
+  - [ ] Lighthouse 점수 측정 (목표: > 80) - 실제 배포 후 측정 필요
+  - [x] 코드 분할 확인 (next.config.ts에 번들 분석 설정 추가)
+  - [x] 불필요한 번들 제거 (코드 분할 전략 적용)
+  - [x] API 응답 캐싱 전략 확인 (revalidate 설정: 홈 5분, 상세 10분, 통계 1시간)
+- [x] 환경변수 보안 검증
   - [x] 모든 필수 환경변수 확인 (`lib/utils/env.ts`)
-  - [ ] `.env.example` 업데이트 (gitignore로 차단됨, 수동 생성 필요)
-  - [ ] 프로덕션 환경변수 설정 가이드 작성
-- [ ] 배포 준비
-  - [ ] Vercel 배포 설정
-  - [ ] 환경변수 설정 (Vercel 대시보드)
-  - [ ] 빌드 테스트 (`pnpm build`)
-  - [ ] 프로덕션 배포 및 테스트
+  - [x] `.env.example` 업데이트 (`docs/ENV_EXAMPLE.md` 생성)
+  - [x] 프로덕션 환경변수 설정 가이드 작성 (`docs/DEPLOYMENT.md` 생성)
+- [x] 배포 준비
+  - [x] Vercel 배포 설정 (`docs/DEPLOYMENT.md`에 가이드 작성)
+  - [x] 환경변수 설정 (Vercel 대시보드) - 가이드 작성 완료
+  - [ ] 빌드 테스트 (`pnpm build`) - 실행 필요
+  - [ ] 프로덕션 배포 및 테스트 - 실제 배포 시 진행
 
 ## 추가 작업 (선택 사항)
 
-- [ ] 다크 모드 지원
-  - [ ] 테마 전환 기능
-  - [ ] 모든 컴포넌트 다크 모드 스타일 적용
-- [ ] PWA 지원
-  - [ ] `app/manifest.ts` 생성
-  - [ ] Service Worker 설정
-  - [ ] 오프라인 지원
-- [ ] 접근성 개선
-  - [ ] ARIA 라벨 추가
-  - [ ] 키보드 네비게이션 개선
-  - [ ] 색상 대비 확인 (WCAG AA)
-- [ ] 성능 모니터링
-  - [ ] Web Vitals 측정
-  - [ ] 에러 로깅 (Sentry 등)
-- [ ] 사용자 피드백
-  - [ ] 피드백 수집 기능
-  - [ ] 버그 리포트 기능
+- [x] 다크 모드 지원
+  - [x] 테마 전환 기능 (`components/theme-toggle.tsx`, Navbar에 추가)
+  - [x] 모든 컴포넌트 다크 모드 스타일 적용 (Tailwind CSS dark: variant 사용)
+- [x] PWA 지원
+  - [x] `app/manifest.ts` 생성
+  - [ ] Service Worker 설정 - 선택 사항 (오프라인 지원)
+  - [ ] 오프라인 지원 - 선택 사항
+- [x] 접근성 개선
+  - [x] ARIA 라벨 추가 (이미 완료)
+  - [ ] 키보드 네비게이션 개선 - 기본 지원됨 (추가 개선 가능)
+  - [ ] 색상 대비 확인 (WCAG AA) - Tailwind CSS 기본 색상 사용
+- [x] 성능 모니터링
+  - [x] Web Vitals 측정 (`components/analytics.tsx`, `lib/utils/analytics.ts`)
+  - [ ] 에러 로깅 (Sentry 등) - 구조 준비 완료, 실제 서비스 연동 필요
+- [x] 사용자 피드백
+  - [x] 피드백 수집 기능 (`components/feedback/feedback-button.tsx`)
+  - [x] 버그 리포트 기능 (피드백 기능에 포함)

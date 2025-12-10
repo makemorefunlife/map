@@ -89,8 +89,12 @@ export function TypeChart({ data, isLoading }: TypeChartProps) {
         </p>
       </div>
       <div className="flex flex-col md:flex-row gap-8 items-center">
-        <ChartContainer config={chartConfig} className="h-[400px] w-full md:w-1/2">
-          <PieChart>
+        <ChartContainer
+          config={chartConfig}
+          className="h-[400px] w-full md:w-1/2"
+          aria-label="타입별 관광지 분포 차트"
+        >
+          <PieChart role="img" aria-label="관광 타입별 비율 도넛 차트">
             <ChartTooltip
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
