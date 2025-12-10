@@ -1,41 +1,183 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { RiSupabaseFill } from "react-icons/ri";
+/**
+ * @file page.tsx
+ * @description 홈페이지 - 관광지 목록
+ *
+ * 관광지 목록을 표시하고, 필터, 검색, 지도 기능을 제공합니다.
+ */
 
-export default function Home() {
+import { Suspense } from "react";
+import { TourListWithMap } from "@/components/tour-list-with-map";
+import { TourFilters } from "@/components/tour-filters";
+import { TourSearch } from "@/components/tour-search";
+import { getAreaCode, getAreaBasedList, searchKeyword } from "@/lib/api/tour-api";
+import type { TourItem, ContentTypeId } from "@/lib/types/tour";
+import { Error } from "@/components/ui/error";
+
+interface HomePageProps {
+  searchParams: Promise<{
+    areaCode?: string;
+    contentTypeId?: string;
+    keyword?: string;
+    sort?: string;
+    page?: string;
+  }>;
+}
+
+// 데이터 정렬 함수
+function sortTours(tours: TourItem[], sort: string): TourItem[] {
+  if (sort === "name") {
+    return [...tours].sort((a, b) => a.title.localeCompare(b.title));
+  }
+  // 최신순 (기본값)
+  return [...tours].sort(
+    (a, b) =>
+      new Date(b.modifiedtime).getTime() -
+      new Date(a.modifiedtime).getTime()
+  );
+}
+
+// API 응답에서 TourItem 배열 추출
+function extractTourItems(response: any): TourItem[] {
+  const items = response.response?.body?.items?.item;
+  if (!items) return [];
+  return Array.isArray(items) ? items : [items];
+}
+
+async function TourListData({
+  areaCode,
+  contentTypeId,
+  keyword,
+  sort,
+  page,
+}: {
+  areaCode?: string;
+  contentTypeId?: string;
+  keyword?: string;
+  sort?: string;
+  page?: string;
+}) {
+  try {
+    let tours: TourItem[] = [];
+    let totalCount = 0;
+    const pageNo = parseInt(page || "1");
+    const numOfRows = 20;
+
+    // 검색어가 있으면 검색 API 사용
+    if (keyword) {
+      const params: any = {
+        keyword,
+        numOfRows,
+        pageNo,
+      };
+      if (areaCode && areaCode !== "all") {
+        params.areaCode = areaCode;
+      }
+      if (contentTypeId) {
+        const ids = contentTypeId.split(",").map(Number);
+        if (ids.length === 1) {
+          params.contentTypeId = ids[0] as ContentTypeId;
+        }
+      }
+      const response = await searchKeyword(params);
+      tours = extractTourItems(response);
+      totalCount = response.response?.body?.totalCount || 0;
+    } else {
+      // 검색어가 없으면 지역 기반 목록 API 사용
+      const params: any = {
+        numOfRows,
+        pageNo,
+      };
+      if (areaCode && areaCode !== "all") {
+        params.areaCode = areaCode;
+      }
+      if (contentTypeId) {
+        const ids = contentTypeId.split(",").map(Number);
+        if (ids.length === 1) {
+          params.contentTypeId = ids[0] as ContentTypeId;
+        }
+      }
+      const response = await getAreaBasedList(params);
+      tours = extractTourItems(response);
+      totalCount = response.response?.body?.totalCount || 0;
+    }
+
+    // 정렬 적용
+    const sortedTours = sortTours(tours, sort || "latest");
+
+    return (
+      <TourListWithMap
+        tours={sortedTours}
+        totalCount={totalCount}
+        currentPage={pageNo}
+        pageSize={numOfRows}
+      />
+    );
+  } catch (error) {
+    console.error("Error fetching tours:", error);
+    return (
+      <Error
+        message="관광지 목록을 불러오는 중 오류가 발생했습니다."
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
+}
+
+async function AreaCodesData() {
+  try {
+    const response = await getAreaCode({ numOfRows: 100 });
+    const items = response.response?.body?.items?.item;
+    const areaCodes = Array.isArray(items) ? items : items ? [items] : [];
+    return <TourFilters areaCodes={areaCodes} />;
+  } catch (error) {
+    console.error("Error fetching area codes:", error);
+    return <TourFilters areaCodes={[]} />;
+  }
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const {
+    areaCode,
+    contentTypeId,
+    keyword,
+    sort = "latest",
+    page = "1",
+  } = params;
+
   return (
-    <main className="min-h-[calc(100vh-80px)] flex items-center px-8 py-16 lg:py-24">
-      <section className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start lg:items-center">
-        {/* 좌측: 환영 메시지 */}
-        <div className="flex flex-col gap-8">
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-            SaaS 앱 템플릿에 오신 것을 환영합니다
-          </h1>
-          <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed">
-            Next.js, Shadcn, Clerk, Supabase, TailwindCSS로 구동되는 완전한
-            기능의 템플릿으로 다음 프로젝트를 시작하세요.
-          </p>
+    <main className="container mx-auto px-4 py-8 max-w-7xl">
+      {/* 검색창 */}
+      <div className="mb-8">
+        <Suspense fallback={<div className="h-10 bg-muted animate-pulse rounded" />}>
+          <TourSearch initialKeyword={keyword || ""} />
+        </Suspense>
         </div>
 
-        {/* 우측: 버튼 두 개 세로 정렬 */}
-        <div className="flex flex-col gap-6">
-          <Link href="/storage-test" className="w-full">
-            <Button className="w-full h-28 flex items-center justify-center gap-4 text-xl shadow-lg hover:shadow-xl transition-shadow">
-              <RiSupabaseFill className="w-8 h-8" />
-              <span>Storage 파일 업로드 테스트</span>
-            </Button>
-          </Link>
-          <Link href="/auth-test" className="w-full">
-            <Button
-              className="w-full h-28 flex items-center justify-center gap-4 text-xl shadow-lg hover:shadow-xl transition-shadow"
-              variant="outline"
-            >
-              <RiSupabaseFill className="w-8 h-8" />
-              <span>Clerk + Supabase 인증 연동</span>
-            </Button>
-          </Link>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* 필터 사이드바 */}
+        <aside className="lg:col-span-1">
+          <div className="sticky top-4">
+            <h2 className="text-lg font-semibold mb-4">필터</h2>
+            <Suspense fallback={<div className="h-64 bg-muted animate-pulse rounded" />}>
+              <AreaCodesData />
+            </Suspense>
+          </div>
+        </aside>
+
+        {/* 관광지 목록 및 지도 */}
+        <div className="lg:col-span-3">
+          <Suspense fallback={<TourListWithMap tours={[]} isLoading />}>
+            <TourListData
+              areaCode={areaCode}
+              contentTypeId={contentTypeId}
+              keyword={keyword}
+              sort={sort}
+              page={page}
+            />
+          </Suspense>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
